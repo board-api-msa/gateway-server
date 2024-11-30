@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
 import java.util.List;
 
 @Component
@@ -44,10 +43,9 @@ public class TokenValidationFilter implements GlobalFilter {
         String jwtToken = getJwtFromRequest(requestHeaders);
         if (jwtToken != null && jwtTokenUtil.validateToken(jwtToken)) {
             Claims claims = jwtTokenUtil.getClaimsFromToken(jwtToken);
-            long userId = Long.parseLong(claims.getSubject());
             exchange = exchange.mutate()
                     .request(builder -> {
-                        builder.header("X-User-Id", String.valueOf(userId));
+                        builder.header("X-User-Id", claims.getSubject());
                     })
                     .build();
         } else {
